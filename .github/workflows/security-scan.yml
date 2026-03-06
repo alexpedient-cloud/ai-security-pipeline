@@ -1,0 +1,27 @@
+name: AI Security Scan Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install bandit semgrep pylint safety
+
+      - run: bandit -r .
+
+      - run: semgrep --config=auto
+
+      - run: pylint training_pipeline.py || true
+
+      - run: safety check || true
